@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import z from "zod";
+import jwt from "jsonwebtoken";
 
 const app = express();
 
@@ -47,7 +48,7 @@ const auth = (req, res, next) => {
   next();
 };
 
-app.post("/signin", auth, (req, res) => {
+app.post("/signup", auth, (req, res) => {
   const username = req.headers.username;
   const password = req.headers.password;
   const email = req.headers.email;
@@ -64,6 +65,7 @@ app.post("/signin", auth, (req, res) => {
 
 app.get("/", (req, res) => {
   const token = req.headers.authorization;
+  console.log(token);
 
   if (!token) {
     return res.status(401).send({ success: false, message: "Unauthorized" });
@@ -72,7 +74,7 @@ app.get("/", (req, res) => {
   try {
     const decoded = jwt.verify(token, "secretkey");
     // sending the list of users as response
-    res.status(200).send({ success: true, data: USERS });
+    res.status(200).send({ success: true, users: USERS });
   } catch (err) {
     res.status(401).send({ success: false, message: "Invalid token" });
   }
